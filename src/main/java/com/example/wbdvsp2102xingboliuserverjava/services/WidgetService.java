@@ -1,6 +1,8 @@
 package com.example.wbdvsp2102xingboliuserverjava.services;
 
 import com.example.wbdvsp2102xingboliuserverjava.models.Widget;
+import com.example.wbdvsp2102xingboliuserverjava.repositories.WidgetRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -9,42 +11,42 @@ import java.util.List;
 
 @Service
 public class WidgetService {
+
+    @Autowired
+    WidgetRepository repository;
+
+
     private List<Widget> widgets = new ArrayList<>();
 
     public Widget createWidget(String tid, Widget widget) {
         widget.setTopicId(tid);
-        widget.setId((new Date()).getTime());
-        widgets.add(widget);
-        return widget;
+
+        return repository.save(widget);
     }
 
     public List<Widget> findWidgetsForTopic(String tid) {
-        List<Widget> ws = new ArrayList<>();
-        for(Widget w: widgets) {
-            if (w.getTopicId().equals(tid)){
-                ws.add(w);
-            }
-        }
-        return ws;
+        return repository.findWidgetsForTopic(tid);
     }
 
     public int updateWidget(Long wid, Widget widget) {
-        for (int i = 0; i < widgets.size(); i++) {
-            if (widgets.get(i).getId().equals(wid)) {
-                widgets.set(i, widget);
-                return 1;
-            }
-        }
-        return 0;
+        Widget originalWidget = repository.findById(wid).get();
+
+        originalWidget.setText(widget.getText());
+        originalWidget.setType(widget.getType());
+        originalWidget.setOrdered(widget.getOrdered());
+        originalWidget.setSrc(widget.getSrc());
+        originalWidget.setWidth(widget.getWidth());
+        originalWidget.setHeight(widget.getHeight());
+
+
+        repository.save(originalWidget);
+
+        return 1;
     }
 
     public int deleteWidget(Long wid){
-        for (int i = 0; i < widgets.size(); i++) {
-            if (widgets.get(i).getId().equals(wid)) {
-                widgets.remove(i);
-                return 1;
-            }
-        }
-        return 0;
+        repository.deleteById(wid);
+
+        return 1;
     }
 }
