@@ -20,7 +20,7 @@ public class WidgetService {
 
     public Widget createWidget(String tid, Widget widget) {
         widget.setTopicId(tid);
-
+        
         return repository.save(widget);
     }
 
